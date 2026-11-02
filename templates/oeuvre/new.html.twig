@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle œuvre{% endblock %}
+
+{% block body %}
+    {{ include('menu/index.html.twig') }}
+
+    <div class="container py-4" style="max-width: 800px;">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h3 mb-4">Ajouter une œuvre</h1>
+
+                {{ include('oeuvre/_form.html.twig', {'button_label': 'Créer l’œuvre'}) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{{ form_start(form) }}
+    <div class="row g-3">
+        <div class="col-12">
+            {{ form_row(form.titre) }}
+        </div>
+        <div class="col-12">
+            {{ form_row(form.description) }}
+        </div>
+
+        <div class="col-md-6">
+            {{ form_row(form.dateCreation) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.dateDestruction) }}
+        </div>
+
+        <div class="col-md-6">
+            {{ form_row(form.lieu) }}
+        </div>
+        <div class="col-md-6 d-flex align-items-center">
+            {{ form_row(form.oeuvreRecouverte) }}
+        </div>
+
+        <div class="col-md-6">
+            {{ form_row(form.artistes) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.techniques) }}
+        </div>
+
+        <div class="col-12">
+            {{ form_row(form.photo) }}
+        </div>
+    </div>
+
+    {{ form_rest(form) }}
+
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <a href="{{ path('app_oeuvre_index') }}" class="btn btn-outline-secondary">Retour à la liste</a>
+        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    </div>
+{{ form_end(form) }}

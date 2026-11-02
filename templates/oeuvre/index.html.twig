@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Photos index{% endblock %}
+{% block title %}Oeuvre index{% endblock %}
 
 {% block body %}
     {{ include('menu/index.html.twig') }}
@@ -8,12 +8,15 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-8 d-flex flex-wrap gap-3">
-                {% for photo in photos %}
+                {% for oeuvre in oeuvres %}
                     <div class="card" style="width: 18rem;">
-                        <img src="{{ asset('uploads/photos/' ~ photo.nomFichier) }}" class="card-img-top" alt="...">
+                        {% set photo = oeuvre.photos|first %}
+                        {% if photo %}
+                            <img src="{{ asset('uploads/photos/' ~ photo.nomFichier) }}" class="card-img-top" alt="{{ oeuvre.titre }}">
+                        {% endif %}
                         <div class="card-body">
-                            <h5 class="card-title">{{ photo.nomFichier }}</h5>
-                            <p class="card-text">{{ photo.etatOeuvre }}</p>
+                            <h5 class="card-title">{{ oeuvre.titre }}</h5>
+
                         </div>
                     </div>
                 {% else %}
@@ -25,5 +28,4 @@
             </div>
         </div>
     </div>
-    <a class="btn btn-primary" href="{{ path('app_photos_new') }}">Ajouter</a>
 {% endblock %}

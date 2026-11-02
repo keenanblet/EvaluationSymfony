@@ -2,7 +2,9 @@
 
 namespace App\Form;
 
+use App\Entity\Oeuvre;
 use App\Entity\Photos;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -34,6 +36,10 @@ class PhotosType extends AbstractType
                             'Merci d’envoyer une image valide JPEG, PNG, WebP ou GIF.',
                     ),
                 ],
+            ])
+            ->add('oeuvre', EntityType::class, [
+                'class' => Oeuvre::class,
+                'choice_label' => 'titre',
             ])
             ->add('etatOeuvre');
     }

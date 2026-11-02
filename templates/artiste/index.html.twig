@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Artiste index{% endblock %}
+
+{% block body %}
+{{ include('menu/index.html.twig') }}
+    <h1>Artiste index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Pseudonyme</th>
+                <th>NomReel</th>
+                <th>Bio</th>
+                <th>Nationalite</th>
+                {% if is_granted('ROLE_ADMIN') %}
+                <th>actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+        {% for artiste in artistes %}
+            <tr>
+                <td>{{ artiste.id }}</td>
+                <td>{{ artiste.pseudonyme }}</td>
+                <td>{{ artiste.nomReel }}</td>
+                <td>{{ artiste.bio }}</td>
+                <td>{{ artiste.nationalite }}</td>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <td>
+                        <a href="{{ path('app_artiste_show', {'id': artiste.id}) }}">show</a>
+                        <a href="{{ path('app_artiste_edit', {'id': artiste.id}) }}">edit</a>
+                    </td>
+                {% endif %}
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
