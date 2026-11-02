@@ -24,7 +24,7 @@ final class OeuvreController extends AbstractController
             'oeuvres' => $oeuvreRepository->findAll(),
         ]);
     }
-    #[IsGranted('ROLE_ARTISTE')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/new', name: 'app_oeuvre_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
     {
@@ -63,7 +63,7 @@ final class OeuvreController extends AbstractController
             'oeuvre' => $oeuvre,
         ]);
     }
-    #[IsGranted('ROLE_ARTISTE')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}/edit', name: 'app_oeuvre_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Oeuvre $oeuvre, EntityManagerInterface $entityManager): Response
     {
@@ -81,7 +81,7 @@ final class OeuvreController extends AbstractController
             'form' => $form,
         ]);
     }
-    #[IsGranted('ROLE_ARTISTE')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_oeuvre_delete', methods: ['POST'])]
     public function delete(Request $request, Oeuvre $oeuvre, EntityManagerInterface $entityManager): Response
     {

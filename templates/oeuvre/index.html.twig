@@ -1,31 +1,30 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Oeuvre index{% endblock %}
+{% block title %}Les oeuvres{% endblock %}
 
 {% block body %}
     {{ include('menu/index.html.twig') }}
 
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-8 d-flex flex-wrap gap-3">
-                {% for oeuvre in oeuvres %}
-                    <div class="card" style="width: 18rem;">
-                        {% set photo = oeuvre.photos|first %}
-                        {% if photo %}
-                            <img src="{{ asset('uploads/photos/' ~ photo.nomFichier) }}" class="card-img-top" alt="{{ oeuvre.titre }}">
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ oeuvre.titre }}</h5>
+        <h1 class="mb-4">Les oeuvres</h1>
 
-                        </div>
+        {# "galerie" est défini dans assets/styles/app.css : il range les cartes en colonnes #}
+        <div class="galerie">
+            {% for oeuvre in oeuvres %}
+                {% set photo = oeuvre.photos|first %}
+
+                <div class="card">
+                    {% if photo %}
+                        <img src="{{ asset('uploads/photos/' ~ photo.nomFichier) }}" class="card-img-top" alt="{{ oeuvre.titre }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ oeuvre.titre }}</h5>
+                        <a href="{{ path('app_oeuvre_show', {id: oeuvre.id}) }}" class="btn btn-primary btn-sm">Voir</a>
                     </div>
-                {% else %}
-                    <p>Aucune photo pour l'instant</p>
-                {% endfor %}
-            </div>
-            <div class="col-md-4">
-                <img src="{{ asset('media/accueil.png') }}" class="img-fluid" alt="">
-            </div>
+                </div>
+            {% else %}
+                <p>Aucune oeuvre pour l'instant</p>
+            {% endfor %}
         </div>
     </div>
 {% endblock %}

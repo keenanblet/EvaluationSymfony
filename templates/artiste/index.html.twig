@@ -4,41 +4,25 @@
 
 {% block body %}
 {{ include('menu/index.html.twig') }}
-    <h1>Artiste index</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Pseudonyme</th>
-                <th>NomReel</th>
-                <th>Bio</th>
-                <th>Nationalite</th>
-                {% if is_granted('ROLE_ADMIN') %}
-                <th>actions</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
+    <h1>Les Artistes</h1>
+    <div class="row g-4">
         {% for artiste in artistes %}
-            <tr>
-                <td>{{ artiste.id }}</td>
-                <td>{{ artiste.pseudonyme }}</td>
-                <td>{{ artiste.nomReel }}</td>
-                <td>{{ artiste.bio }}</td>
-                <td>{{ artiste.nationalite }}</td>
-                {% if is_granted('ROLE_ADMIN') %}
-                    <td>
-                        <a href="{{ path('app_artiste_show', {'id': artiste.id}) }}">show</a>
-                        <a href="{{ path('app_artiste_edit', {'id': artiste.id}) }}">edit</a>
-                    </td>
-                {% endif %}
-            </tr>
+        <div class="col-md-3">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <div class="rounded-circle bg-secondary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">{{  artiste.pseudonyme |slice(0, 1) }}</div>
+                    <h5 class="card-title">{{ artiste.pseudonyme }}</h5>
+                    <p class="card-subtitle text-muted">{{ artiste.nomReel }}</p>
+                    <p class="card-text">{{ artiste.bio }}</p>
+                    <a href="{{ path('app_artiste_show', {'id': artiste.id}) }}" class="btn btn-primary">Voir</a>
+                </div>
+            </div>
+        </div>
         {% else %}
             <tr>
                 <td colspan="6">no records found</td>
             </tr>
+
         {% endfor %}
-        </tbody>
-    </table>
+    </div>
 {% endblock %}
