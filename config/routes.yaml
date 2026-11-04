@@ -14,4 +14,4 @@ home:
     path: /
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
-        route: app_photos_index
+        route: app_oeuvre_index

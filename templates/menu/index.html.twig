@@ -1,40 +1,34 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Hello MenuController!{% endblock %}
-
-{% block body %}
-    <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom px-3 mb-4">
-        <a class="navbar-brand" href="#">ArtDeRue</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ path('app_oeuvre_index') }}">Accueil</span></a>
-                </li>
-                {% if is_granted('ROLE_ADMIN') %}
+<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom px-3 mb-4">
+    <a class="navbar-brand" href="{{ path('app_oeuvre_index') }}">ArtDeRue</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="{{ path('app_oeuvre_index') }}">Accueil</a>
+            </li>
+            {% if is_granted('ROLE_BENEVOLE') %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_oeuvre_new') }}">Ajouter</a>
+            </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('app_artiste_index') }}">Artiste</a>
+            </li>
+            {% if is_granted('ROLE_ADMIN') %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_oeuvre_new') }}">Ajouter</a>
+                    <a class="nav-link" href="{{ path('app_user_index') }}">Administrateur</a>
                 </li>
+            {% endif %}
+            <li>
+                {% if app.user %}
+                    <a  class="nav-link" href="{{ logout_path() }}">Se déconnecter</a>
+                {% else %}
+                    <a  class="nav-link" href="{{ path('app_login') }}">Se connecter</a>
                 {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_artiste_index') }}">Artiste</a>
-                </li>
-                {% if is_granted('ROLE_ADMIN') %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_user_index') }}">Administrateur</a>
-                    </li>
-                {% endif %}
-                <li>
-                    {% if app.user %}
-                        <a  class="nav-link" href="{{ logout_path() }}">Se déconnecter</a>
-                    {% else %}
-                        <a  class="nav-link" href="{{ path('app_login') }}">Se connecter</a>
-                    {% endif %}
-                </li>
+            </li>
 
-            </ul>
-        </div>
-    </nav>
-{% endblock %}
+        </ul>
+    </div>
+</nav>

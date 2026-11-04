@@ -1,3 +1,16 @@
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.css"/>
+<script src="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.js"></script>
+<style>
+    /* Texte de la barre de recherche et des résultats en noir */
+    .leaflet-control-geocoder input,
+    .leaflet-control-geocoder-alternatives a {
+        color: #000;
+    }
+</style>
+
 {{ form_start(form) }}
     <div class="row g-3">
         <div class="col-12">
@@ -17,6 +30,94 @@
         <div class="col-md-6">
             {{ form_row(form.lieu) }}
         </div>
+        <label>Sélectionnez le lieu: </label>
+        <div id="map" style="height: 400px; width: 100%; margin-bottom: 20px;"></div>
+        {{ form_widget(form.latitude) }}
+        {{ form_widget(form.longitude) }}
+        {{ form_widget(form.lieuNom) }}
+        {{ form_widget(form.lieuAdresse) }}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Récupération des inputs HTML générés par Symfony grâce à leurs IDs automatiques
+                const latInput = document.getElementById("{{ form.latitude.vars.id }}");
+                const lngInput = document.getElementById("{{ form.longitude.vars.id }}");
+                const lieuSelect = document.getElementById("{{ form.lieu.vars.id }}");
+                const lieuNomInput = document.getElementById("{{ form.lieuNom.vars.id }}");
+                const lieuAdresseInput = document.getElementById("{{ form.lieuAdresse.vars.id }}");
+
+                // Si on choisit un lieu dans la liste, on oublie celui de la recherche
+                lieuSelect.addEventListener("change", function () {
+                    lieuNomInput.value = "";
+                    lieuAdresseInput.value = "";
+                });
+
+                // Définir le centre par défaut (ici la France, ou Nantes [47.218, -1.553])
+                let defaultLat = latInput.value ? parseFloat(latInput.value) : 46.603354;
+                let defaultLng = lngInput.value ? parseFloat(lngInput.value) : 1.888334;
+                let defaultZoom = latInput.value ? 13 : 6;
+
+                // Initialisation de la carte Leaflet
+                const map = L.map("map").setView([defaultLat, defaultLng], defaultZoom);
+
+                // Chargement du fond de carte OpenStreetMap
+                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    maxZoom: 19,
+                    attribution: "© OpenStreetMap contributors",
+                }).addTo(map);
+
+                let marker;
+                // Barre de recherche de lieu
+                L.Control.geocoder({
+                    defaultMarkGeocode: false, // on gère nous-mêmes le marqueur
+                    placeholder: "Rechercher un lieu...",
+                })
+                    .on("markgeocode", function (e) {
+                        const latlng = e.geocode.center;
+
+                        // Remplir les champs du formulaire
+                        latInput.value = latlng.lat;
+                        lngInput.value = latlng.lng;
+
+                        // Nom court (avant la 1re virgule) + adresse complète, enregistrés comme nouveau Lieu
+                        lieuNomInput.value = e.geocode.name.split(",")[0].trim();
+                        lieuAdresseInput.value = e.geocode.name;
+                        lieuSelect.value = "";
+
+                        // Placer ou déplacer le marqueur
+                        if (marker) {
+                            marker.setLatLng(latlng);
+                        } else {
+                            marker = L.marker(latlng).addTo(map);
+                        }
+
+                        // Centrer la carte sur le résultat
+                        map.fitBounds(e.geocode.bbox);
+                    })
+                    .addTo(map);
+
+                // Si on est en mode édition (les coordonnées existent déjà en BDD)
+                if (latInput.value && lngInput.value) {
+                    marker = L.marker([defaultLat, defaultLng]).addTo(map);
+                }
+
+                // Gestion du clic sur la carte
+                map.on("click", function (e) {
+                    const lat = e.latlng.lat;
+                    const lng = e.latlng.lng;
+
+                    // Mise à jour des valeurs dans le formulaire Symfony
+                    latInput.value = lat;
+                    lngInput.value = lng;
+
+                    // Déplacement ou création du marqueur
+                    if (marker) {
+                        marker.setLatLng(e.latlng);
+                    } else {
+                        marker = L.marker(e.latlng).addTo(map);
+                    }
+                });
+            });
+        </script>
         <div class="col-md-6 d-flex align-items-center">
             {{ form_row(form.oeuvreRecouverte) }}
         </div>
@@ -40,3 +141,6 @@
         <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
     </div>
 {{ form_end(form) }}
+
+
+

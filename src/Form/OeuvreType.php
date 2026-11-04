@@ -9,6 +9,7 @@ use App\Entity\Technique;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -47,11 +48,20 @@ class OeuvreType extends AbstractType
                 'expanded' => true,
                 'label' => 'Artistes',
             ])
-            ->add('lieu', EntityType::class, [
-                'class' => Lieu::class,
-                'choice_label' => 'nom',
-                'label' => 'Lieu',
-                'placeholder' => 'Choisir un lieu',
+            // Remplis par la barre de recherche de la carte : le contrôleur crée le Lieu
+            ->add('lieuNom', HiddenType::class, [
+                'mapped' => false,
+                'required' => false,
+            ])
+            ->add('lieuAdresse', HiddenType::class, [
+                'mapped' => false,
+                'required' => false,
+            ])
+            ->add('latitude', HiddenType::class, [
+                'required' => true,
+            ])
+            ->add('longitude', HiddenType::class, [
+                'required' => true,
             ])
             ->add('techniques', EntityType::class, [
                 'class' => Technique::class,

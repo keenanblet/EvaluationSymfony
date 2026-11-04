@@ -22,7 +22,7 @@ final class ArtisteController extends AbstractController
             'artistes' => $artisteRepository->findAll(),
         ]);
     }
-    #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_BENEVOLE')]
     #[Route('/new', name: 'app_artiste_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -50,7 +50,7 @@ final class ArtisteController extends AbstractController
             'artiste' => $artiste,
         ]);
     }
-    #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_BENEVOLE')]
     #[Route('/{id}/edit', name: 'app_artiste_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Artiste $artiste, EntityManagerInterface $entityManager): Response
     {
@@ -68,7 +68,7 @@ final class ArtisteController extends AbstractController
             'form' => $form,
         ]);
     }
-    #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_BENEVOLE')]
     #[Route('/{id}', name: 'app_artiste_delete', methods: ['POST'])]
     public function delete(Request $request, Artiste $artiste, EntityManagerInterface $entityManager): Response
     {
