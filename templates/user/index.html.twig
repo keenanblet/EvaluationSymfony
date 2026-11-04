@@ -1,39 +1,61 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User index{% endblock %}
+{% block title %}Les utilisateurs{% endblock %}
 
 {% block body %}
-    <h1>User index</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nom</th>
-                <th>Prenom</th>
-                <th>Email</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.nom }}</td>
-                <td>{{ user.prenom }}</td>
-                <td>{{ user.email }}</td>
-                <td>
-                    <a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
-                    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {# Bandeau, même style que les autres pages #}
+    <section class="accueil-hero artiste-hero">
+        <div class="container">
+            <span class="accueil-badge"><i class="bi bi-people"></i> Utilisateurs</span>
+            <h1 class="accueil-titre">Les <span>utilisateurs</span></h1>
+            <p class="accueil-sous-titre">
+                Les comptes des bénévoles et des administrateurs d'ArtDeRue.
+            </p>
+            <a href="{{ path('app_user_new') }}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-lg"></i> Ajouter un utilisateur
+            </a>
+        </div>
+    </section>
 
-    <a href="{{ path('app_user_new') }}">Create new</a>
+    <div class="container">
+        <section class="accueil-section">
+            <div class="row g-3">
+                {# mêmes cartes que le tableau de bord admin #}
+                {% for user in users %}
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="admin-module">
+                            <div class="d-flex align-items-center gap-3">
+                                {# rond orange avec les initiales, comme pour les artistes #}
+                                <div class="artiste-avatar">{{ user.prenom|slice(0, 1)|upper }}{{ user.nom|slice(0, 1)|upper }}</div>
+                                <div class="text-truncate">
+                                    <h3 class="text-truncate">{{ user.prenom }} {{ user.nom }}</h3>
+                                    <small class="text-secondary">{{ user.email }}</small>
+                                </div>
+                            </div>
+
+                            {% if 'ROLE_ADMIN' in user.roles %}
+                                <span class="artiste-nationalite m-0"><i class="bi bi-shield-lock"></i> Administrateur</span>
+                            {% elseif 'ROLE_BENEVOLE' in user.roles %}
+                                <span class="artiste-nationalite m-0"><i class="bi bi-heart"></i> Bénévole</span>
+                            {% else %}
+                                <span class="artiste-nationalite m-0"><i class="bi bi-person"></i> Membre</span>
+                            {% endif %}
+
+                            <div class="admin-module-actions">
+                                <a href="{{ path('app_user_show', {id: user.id}) }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye"></i> Voir
+                                </a>
+                                <a href="{{ path('app_user_edit', {id: user.id}) }}" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-pencil"></i> Modifier
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="text-secondary">Aucun utilisateur pour l'instant</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
 {% endblock %}

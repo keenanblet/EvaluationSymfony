@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration{% endblock %}
+
+{% block body %}
+
+    {% set modules = [
+        {titre: 'Oeuvres', icone: 'bi-images', liste: 'app_oeuvre_index', ajout: 'app_oeuvre_new'},
+        {titre: 'Artistes', icone: 'bi-person', liste: 'app_artiste_index', ajout: 'app_artiste_new'},
+        {titre: 'Techniques', icone: 'bi-brush', liste: 'app_technique_index', ajout: 'app_technique_new'},
+        {titre: 'Utilisateurs', icone: 'bi-people', liste: 'app_user_index', ajout: 'app_user_new'},
+    ] %}
+
+    {# Bandeau, même style que les autres pages #}
+    <section class="accueil-hero artiste-hero">
+        <div class="container">
+            <span class="accueil-badge"><i class="bi bi-speedometer2"></i> Administration</span>
+            <h1 class="accueil-titre">Tableau <span>de bord</span></h1>
+            <p class="accueil-sous-titre">
+                Bonjour, tout ce qu'il faut pour gérer les données d'ArtDeRue est ici.
+            </p>
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="accueil-section">
+            <div class="row g-3">
+                {% for module in modules %}
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="admin-module">
+                            <span class="admin-module-icone"><i class="bi {{ module.icone }}"></i></span>
+                            <h3>{{ module.titre }}</h3>
+
+                            <div class="admin-module-actions">
+                                <a href="{{ path(module.liste) }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-list-ul"></i> Voir la liste
+                                </a>
+                                <a href="{{ path(module.ajout) }}" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-plus-lg"></i> Ajouter
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+{% endblock %}

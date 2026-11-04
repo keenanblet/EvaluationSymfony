@@ -1,34 +1,59 @@
+{# Inclus dans base.html.twig : la barre apparaît donc sur toutes les pages #}
+{# "route" = nom de la route de la page actuelle, pour surligner le bon lien #}
+{% set route = app.request.attributes.get('_route') %}
+
 <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom px-3 mb-4">
     <a class="navbar-brand" href="{{ path('app_oeuvre_index') }}">ArtDeRue</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-            <li class="nav-item active">
-                <a class="nav-link" href="{{ path('app_oeuvre_index') }}">Accueil</a>
+        <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+                <a class="nav-link {{ route starts with 'app_oeuvre' and route != 'app_oeuvre_new' ? 'active' }}" href="{{ path('app_oeuvre_index') }}">
+                    <i class="bi bi-images"></i> Oeuvres
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ route starts with 'app_artiste' ? 'active' }}" href="{{ path('app_artiste_index') }}">
+                    <i class="bi bi-person"></i> Artistes
+                </a>
             </li>
             {% if is_granted('ROLE_BENEVOLE') %}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_oeuvre_new') }}">Ajouter</a>
-            </li>
-            {% endif %}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('app_artiste_index') }}">Artiste</a>
-            </li>
-            {% if is_granted('ROLE_ADMIN') %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_user_index') }}">Administrateur</a>
+                    <a class="nav-link {{ route starts with 'app_technique' ? 'active' }}" href="{{ path('app_technique_index') }}">
+                        <i class="bi bi-brush"></i> Techniques
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ route == 'app_oeuvre_new' ? 'active' }}" href="{{ path('app_oeuvre_new') }}">
+                        <i class="bi bi-plus-lg"></i> Ajouter une oeuvre
+                    </a>
                 </li>
             {% endif %}
-            <li>
+            {% if is_granted('ROLE_ADMIN') %}
+                <li class="nav-item">
+                    <a class="nav-link {{ route == 'app_admin' ? 'active' }}" href="{{ path('app_admin') }}">
+                        <i class="bi bi-speedometer2"></i> Administration
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ route starts with 'app_user' ? 'active' }}" href="{{ path('app_user_index') }}">
+                        <i class="bi bi-people"></i> Utilisateurs
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+
+        {# Connexion / déconnexion à droite #}
+        <ul class="navbar-nav">
+            <li class="nav-item">
                 {% if app.user %}
-                    <a  class="nav-link" href="{{ logout_path() }}">Se déconnecter</a>
+                    <a class="nav-link" href="{{ logout_path() }}"><i class="bi bi-box-arrow-right"></i> Se déconnecter</a>
                 {% else %}
-                    <a  class="nav-link" href="{{ path('app_login') }}">Se connecter</a>
+                    <a class="btn btn-primary btn-sm" href="{{ path('app_login') }}"><i class="bi bi-box-arrow-in-right"></i> Se connecter</a>
                 {% endif %}
             </li>
-
         </ul>
     </div>
 </nav>

@@ -404,3 +404,54 @@
         padding: 4rem 0 4rem;
     }
 }
+
+/* Lien du menu de la page actuelle en orange */
+.navbar .nav-link.active {
+    color: var(--bs-primary) !important;
+    font-weight: 600;
+}
+
+/* Tableau de bord admin (admin/index.html.twig) */
+.admin-module {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+    padding: 1.5rem;
+    background: var(--bs-tertiary-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+    transition: transform .2s ease, border-color .2s ease;
+}
+
+.admin-module:hover {
+    transform: translateY(-4px);
+    border-color: var(--bs-primary);
+}
+
+.admin-module h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+/* carré orange avec l'icône, comme l'avatar des artistes */
+.admin-module-icone {
+    width: 52px;
+    height: 52px;
+    border-radius: .75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ff641c, #ff9a5c);
+    color: #fff;
+    font-size: 1.5rem;
+}
+
+/* boutons toujours collés en bas de la carte */
+.admin-module-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-top: auto;
+}

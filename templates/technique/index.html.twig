@@ -1,35 +1,47 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Technique index{% endblock %}
+{% block title %}Les techniques{% endblock %}
 
 {% block body %}
-    <h1>Technique index</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nom</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for technique in techniques %}
-            <tr>
-                <td>{{ technique.id }}</td>
-                <td>{{ technique.nom }}</td>
-                <td>
-                    <a href="{{ path('app_technique_show', {'id': technique.id}) }}">show</a>
-                    <a href="{{ path('app_technique_edit', {'id': technique.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="3">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {# Bandeau, même style que les autres pages #}
+    <section class="accueil-hero artiste-hero">
+        <div class="container">
+            <span class="accueil-badge"><i class="bi bi-brush"></i> Techniques</span>
+            <h1 class="accueil-titre">Les <span>techniques</span></h1>
+            <p class="accueil-sous-titre">
+                Bombe, pochoir, collage, mosaïque… Les façons de créer une oeuvre dans la rue.
+            </p>
+            <a href="{{ path('app_technique_new') }}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-lg"></i> Ajouter une technique
+            </a>
+        </div>
+    </section>
 
-    <a href="{{ path('app_technique_new') }}">Create new</a>
+    <div class="container">
+        <section class="accueil-section">
+            <div class="row g-3">
+                {# mêmes cartes que le tableau de bord admin #}
+                {% for technique in techniques %}
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="admin-module">
+                            <span class="admin-module-icone"><i class="bi bi-brush"></i></span>
+                            <h3>{{ technique.nom }}</h3>
+
+                            <div class="admin-module-actions">
+                                <a href="{{ path('app_technique_show', {id: technique.id}) }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye"></i> Voir
+                                </a>
+                                <a href="{{ path('app_technique_edit', {id: technique.id}) }}" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-pencil"></i> Modifier
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="text-secondary">Aucune technique pour l'instant</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
 {% endblock %}
