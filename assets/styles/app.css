@@ -92,3 +92,315 @@
         column-count: 1;
     }
 }
+
+/* Page détail d'une oeuvre (oeuvre/show.html.twig) */
+.oeuvre-hero {
+    position: relative;
+    height: 420px;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: var(--bs-secondary-bg);
+}
+
+.oeuvre-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  /* l'image remplit le cadre sans être déformée */
+}
+
+.oeuvre-hero-vide {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: var(--bs-secondary-color);
+}
+
+/* Bandeau dégradé en bas de la photo pour que le titre reste lisible */
+.oeuvre-hero-texte {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 4rem 2rem 1.5rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, .85));
+    color: #fff;
+}
+
+.oeuvre-hero-texte h1 {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+}
+
+/* Fiche technique à droite */
+.oeuvre-infos {
+    background: var(--bs-tertiary-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+    padding: 1.25rem;
+}
+
+.oeuvre-info {
+    display: flex;
+    gap: 1rem;
+    padding: .75rem 0;
+}
+
+.oeuvre-info + .oeuvre-info {
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.oeuvre-info i {
+    font-size: 1.4rem;
+    color: var(--bs-primary);
+}
+
+.oeuvre-info small {
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    font-size: .7rem;
+    color: var(--bs-secondary-color);
+}
+
+/* Grille des photos */
+.oeuvre-photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.oeuvre-photos img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: .75rem;
+    transition: transform .2s ease;
+}
+
+.oeuvre-photos img:hover {
+    transform: scale(1.04);
+}
+
+/* Carte Leaflet */
+.oeuvre-map {
+    height: 400px;
+    border-radius: 1rem;
+    border: 1px solid var(--bs-border-color);
+    z-index: 0;  /* évite que la carte passe par-dessus le menu */
+}
+
+@media (max-width: 768px) {
+    .oeuvre-hero {
+        height: 280px;
+    }
+
+    .oeuvre-hero-texte {
+        padding: 3rem 1rem 1rem;
+    }
+}
+
+/* Page d'accueil (home/index.html.twig) */
+.accueil-hero {
+    margin-top: -1.5rem;  /* colle le bandeau au menu (qui a mb-4) */
+    padding: 6rem 0 5rem;
+    background:
+        radial-gradient(circle at 85% 20%, rgba(255, 100, 28, .35), transparent 45%),
+        radial-gradient(circle at 10% 90%, rgba(255, 100, 28, .15), transparent 40%),
+        #0e0e0e;
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+.accueil-badge {
+    display: inline-block;
+    padding: .3rem .8rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--bs-primary);
+    border-radius: 2rem;
+    color: var(--bs-primary);
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+.accueil-titre {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    margin-bottom: 1.25rem;
+}
+
+.accueil-titre span {
+    color: var(--bs-primary);
+}
+
+.accueil-sous-titre {
+    max-width: 600px;
+    font-size: 1.15rem;
+    color: var(--bs-secondary-color);
+    margin-bottom: 2rem;
+}
+
+.accueil-section {
+    margin-top: 4rem;
+}
+
+.accueil-section h2 {
+    font-weight: 800;
+}
+
+/* Vignettes des dernières oeuvres : photo + titre par-dessus */
+.accueil-oeuvre {
+    position: relative;
+    display: block;
+    height: 260px;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: var(--bs-secondary-bg);
+    color: #fff;
+    text-decoration: none;
+}
+
+.accueil-oeuvre img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .3s ease;
+}
+
+.accueil-oeuvre:hover img {
+    transform: scale(1.06);
+}
+
+.accueil-oeuvre-vide {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--bs-secondary-color);
+}
+
+.accueil-oeuvre-texte {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 3rem 1rem 1rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, .85));
+}
+
+.accueil-oeuvre-texte h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Bloc "Tu as repéré une oeuvre ?" */
+.accueil-cta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    margin-bottom: 4rem;
+    background: linear-gradient(135deg, rgba(255, 100, 28, .2), var(--bs-tertiary-bg));
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+}
+
+/* Page liste des artistes (artiste/index.html.twig) */
+.artiste-hero {
+    padding: 4rem 0 3.5rem;  /* bandeau un peu moins haut que sur les oeuvres */
+}
+
+.artiste-carte {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.5rem;
+    background: var(--bs-tertiary-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+    color: inherit;
+    text-decoration: none;
+    transition: transform .2s ease, border-color .2s ease;
+}
+
+.artiste-carte:hover {
+    transform: translateY(-4px);
+    border-color: var(--bs-primary);
+    color: inherit;
+}
+
+.artiste-carte h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+/* rond orange avec l'initiale */
+.artiste-avatar {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ff641c, #ff9a5c);
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.artiste-nationalite {
+    align-self: flex-start;
+    padding: .2rem .7rem;
+    margin-bottom: 1rem;
+    border-radius: 2rem;
+    background: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+    font-size: .8rem;
+}
+
+.artiste-bio {
+    color: var(--bs-secondary-color);
+    font-size: .95rem;
+}
+
+.artiste-apercu {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .5rem;
+    margin-bottom: 1rem;
+}
+
+.artiste-apercu img,
+.artiste-apercu-vide {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: .5rem;
+}
+
+.artiste-apercu-vide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+}
+
+/* "Voir le profil" toujours collé en bas de la carte */
+.artiste-lien {
+    margin-top: auto;
+    color: var(--bs-primary);
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .accueil-hero {
+        padding: 4rem 0 4rem;
+    }
+}

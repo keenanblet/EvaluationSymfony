@@ -7,8 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ArtisteRepository::class)]
+#[UniqueEntity(fields: ['pseudonyme'], message: 'Ce pseudonyme est déjà utilisé.')]
 class Artiste
 {
     #[ORM\Id]
@@ -16,16 +19,20 @@ class Artiste
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
+    #[Assert\NotBlank(message: 'Le pseudonyme est obligatoire.')]
+    #[Assert\Length(max: 255)]
     private ?string $pseudonyme = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $nomReel = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $bio = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100)]
     private ?string $nationalite = null;
 
     /**
@@ -85,7 +92,7 @@ class Artiste
         return $this->nationalite;
     }
 
-    public function setNationalite(string $nationalite): static
+    public function setNationalite(?string $nationalite): static
     {
         $this->nationalite = $nationalite;
 

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Technique{% endblock %}
+
+{% block body %}
+    <h1>Edit Technique</h1>
+
+    {{ include('technique/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_technique_index') }}">back to list</a>
+
+    {{ include('technique/_delete_form.html.twig') }}
+{% endblock %}

@@ -6,6 +6,7 @@ use App\Repository\LieuRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: LieuRepository::class)]
 class Lieu
@@ -16,18 +17,29 @@ class Lieu
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom du lieu est obligatoire.')]
+    #[Assert\Length(max: 255)]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $adresse = null;
 
+    // Nullable en base car les lieux créés depuis la recherche sur la carte n'ont pas de quartier,
+    // mais obligatoire dans un formulaire de Lieu
     #[ORM\Column(length: 150, nullable: true)]
+    #[Assert\NotBlank(message: 'Le quartier est obligatoire.')]
+    #[Assert\Length(max: 150)]
     private ?string $quartier = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column]
+    #[Assert\NotNull(message: 'La latitude est obligatoire.')]
+    #[Assert\Range(min: -90, max: 90)]
     private ?float $latitude = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column]
+    #[Assert\NotNull(message: 'La longitude est obligatoire.')]
+    #[Assert\Range(min: -180, max: 180)]
     private ?float $longitude = null;
 
     /**
@@ -63,7 +75,7 @@ class Lieu
         return $this->adresse;
     }
 
-    public function setAdresse(string $adresse): static
+    public function setAdresse(?string $adresse): static
     {
         $this->adresse = $adresse;
 

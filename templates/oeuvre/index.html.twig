@@ -4,26 +4,90 @@
 
 {% block body %}
 
-    <div class="container-fluid">
-        <h1 class="mb-4">Les oeuvres</h1>
-
-        {# "galerie" est défini dans assets/styles/app.css : il range les cartes en colonnes #}
-        <div class="galerie">
-            {% for oeuvre in oeuvres %}
-                {% set photo = oeuvre.photos|first %}
-
-                <div class="card">
-                    {% if photo %}
-                        <img src="{{ asset('uploads/photos/' ~ photo.nomFichier) }}" class="card-img-top" alt="{{ oeuvre.titre }}">
-                    {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ oeuvre.titre }}</h5>
-                        <a href="{{ path('app_oeuvre_show', {id: oeuvre.id}) }}" class="btn btn-primary btn-sm">Voir</a>
-                    </div>
-                </div>
-            {% else %}
-                <p>Aucune oeuvre pour l'instant</p>
-            {% endfor %}
+    {# Grand bandeau d'accueil #}
+    <section class="accueil-hero">
+        <div class="container">
+            <span class="accueil-badge"><i class="bi bi-geo-alt-fill"></i> Nantes</span>
+            <h1 class="accueil-titre">L'art est dans <span>la rue</span></h1>
+            <p class="accueil-sous-titre">
+                Fresques, graffitis, collages, pochoirs… Découvre les oeuvres de street art de la ville,
+                les artistes qui les ont créées et l'endroit où les trouver.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="#oeuvres" class="btn btn-primary btn-lg">
+                    <i class="bi bi-images"></i> Voir les oeuvres
+                </a>
+                <a href="#carte" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-map"></i> Explorer la carte
+                </a>
+            </div>
         </div>
+    </section>
+
+    <div class="container">
+
+        {# Toutes les oeuvres #}
+        <section class="accueil-section" id="oeuvres">
+            <h2 class="mb-3">Les oeuvres</h2>
+
+            <div class="row g-3">
+                {% for oeuvre in oeuvres %}
+                    {% set photo = oeuvre.photos|first %}
+                    <div class="col-sm-6 col-lg-4">
+                        <a href="{{ path('app_oeuvre_show', {id: oeuvre.id}) }}" class="accueil-oeuvre">
+                            {% if photo %}
+                                <img src="{{ asset('uploads/photos/' ~ photo.nomFichier) }}" alt="{{ oeuvre.titre }}">
+                            {% else %}
+                                <div class="accueil-oeuvre-vide"><i class="bi bi-image"></i></div>
+                            {% endif %}
+                            <div class="accueil-oeuvre-texte">
+                                <h3>{{ oeuvre.titre }}</h3>
+                                {% if oeuvre.lieu %}
+                                    <small><i class="bi bi-geo-alt"></i> {{ oeuvre.lieu.nom }}</small>
+                                {% endif %}
+                            </div>
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-secondary">Aucune oeuvre pour l'instant</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        {# Carte de toutes les oeuvres #}
+        <section class="accueil-section" id="carte">
+            <h2 class="mb-3">Où les trouver ?</h2>
+            <div id="map" class="oeuvre-map"></div>
+            <script>
+                {
+                    const map = L.map("map").setView([47.2183, -1.5536], 14);
+                    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                        maxZoom: 19,
+                        attribution: "© OpenStreetMap contributors",
+                    }).addTo(map);
+                    {% for oeuvre in oeuvres %}
+                        {% if oeuvre.lieu %}
+                            L.marker([{{ oeuvre.lieu.latitude|json_encode }}, {{ oeuvre.lieu.longitude|json_encode }}])
+                                .addTo(map)
+                                .bindPopup({{ ('<a href="' ~ path('app_oeuvre_show', {id: oeuvre.id}) ~ '">' ~ oeuvre.titre|e ~ '</a>')|json_encode|raw }});
+                        {% endif %}
+                    {% endfor %}
+                }
+            </script>
+        </section>
+
+        {# Appel à contribuer #}
+        <section class="accueil-section accueil-cta">
+            <div>
+                <h2>Tu as repéré une oeuvre ?</h2>
+                <p class="m-0 text-secondary">Les bénévoles peuvent ajouter de nouvelles oeuvres et leurs photos.</p>
+            </div>
+            {% if is_granted('ROLE_BENEVOLE') %}
+                <a href="{{ path('app_oeuvre_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-lg"></i> Ajouter une oeuvre</a>
+            {% elseif not app.user %}
+                <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg"><i class="bi bi-box-arrow-in-right"></i> Se connecter</a>
+            {% endif %}
+        </section>
+
     </div>
 {% endblock %}

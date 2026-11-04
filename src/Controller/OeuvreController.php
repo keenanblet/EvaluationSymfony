@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/oeuvre')]
+#[Route('/')]
 final class OeuvreController extends AbstractController
 {
     #[Route(name: 'app_oeuvre_index', methods: ['GET'])]
@@ -61,7 +61,7 @@ final class OeuvreController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_oeuvre_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_oeuvre_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(Oeuvre $oeuvre): Response
     {
         return $this->render('oeuvre/show.html.twig', [
@@ -69,7 +69,7 @@ final class OeuvreController extends AbstractController
         ]);
     }
     #[IsGranted('ROLE_BENEVOLE')]
-    #[Route('/{id}/edit', name: 'app_oeuvre_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_oeuvre_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function edit(Request $request, Oeuvre $oeuvre, EntityManagerInterface $entityManager, LieuRepository $lieuRepository): Response
     {
         $form = $this->createForm(OeuvreType::class, $oeuvre);
@@ -88,7 +88,7 @@ final class OeuvreController extends AbstractController
         ]);
     }
     #[IsGranted('ROLE_BENEVOLE')]
-    #[Route('/{id}', name: 'app_oeuvre_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_oeuvre_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, Oeuvre $oeuvre, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$oeuvre->getId(), $request->getPayload()->getString('_token'))) {
@@ -99,22 +99,19 @@ final class OeuvreController extends AbstractController
         return $this->redirectToRoute('app_oeuvre_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    // Si un lieu a été choisi via la barre de recherche, on réutilise le Lieu du même nom ou on le crée
+    // Le lieu choisi via la barre de recherche (champ obligatoire) : on réutilise le Lieu du même nom ou on le crée
     private function rattacherLieuRecherche(FormInterface $form, Oeuvre $oeuvre, LieuRepository $lieuRepository, EntityManagerInterface $entityManager): void
     {
         $nom = mb_substr(trim((string) $form->get('lieuNom')->getData()), 0, 255);
-        if ('' === $nom) {
-            return;
-        }
 
         $lieu = $lieuRepository->findOneBy(['nom' => $nom]);
         if (!$lieu) {
             $adresse = trim((string) $form->get('lieuAdresse')->getData());
             $lieu = (new Lieu())
                 ->setNom($nom)
-                ->setAdresse(mb_substr('' !== $adresse ? $adresse : $nom, 0, 255))
-                ->setLatitude($oeuvre->getLatitude())
-                ->setLongitude($oeuvre->getLongitude());
+                ->setAdresse('' !== $adresse ? mb_substr($adresse, 0, 255) : null)
+                ->setLatitude((float) $form->get('latitude')->getData())
+                ->setLongitude((float) $form->get('longitude')->getData());
             $entityManager->persist($lieu);
         }
 

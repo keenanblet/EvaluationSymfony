@@ -6,8 +6,11 @@ use App\Repository\TechniqueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TechniqueRepository::class)]
+#[UniqueEntity(fields: ['nom'], message: 'Cette technique existe déjà.')]
 class Technique
 {
     #[ORM\Id]
@@ -15,7 +18,9 @@ class Technique
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
+    #[Assert\NotBlank(message: 'Le nom de la technique est obligatoire.')]
+    #[Assert\Length(max: 255)]
     private ?string $nom = null;
 
     /**

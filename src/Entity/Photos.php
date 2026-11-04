@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PhotosRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PhotosRepository::class)]
 #[ORM\Table(name: 'photos')]
@@ -16,20 +17,26 @@ class Photos
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull(message: 'La date de prise de vue est obligatoire.')]
+    #[Assert\LessThanOrEqual('now', message: 'La date de prise de vue ne peut pas être dans le futur.')]
     private ?\DateTime $datePriseVue = null;
 
     #[ORM\Column(length: 255)]
     private ?string $nomFichier = null;
 
-    #[ORM\Column(length: 255)]
+    // Commentaire facultatif sur l'état de l'œuvre
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $etatOeuvre = null;
 
     #[ORM\ManyToOne(inversedBy: 'photos')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'La photo doit être associée à une œuvre.')]
     private ?Oeuvre $oeuvre = null;
 
+    // Le bénévole qui a pris la photo
     #[ORM\ManyToOne(inversedBy: 'photos')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
     public function getId(): ?int
@@ -66,7 +73,7 @@ class Photos
         return $this->etatOeuvre;
     }
 
-    public function setEtatOeuvre(string $etatOeuvre): static
+    public function setEtatOeuvre(?string $etatOeuvre): static
     {
         $this->etatOeuvre = $etatOeuvre;
 

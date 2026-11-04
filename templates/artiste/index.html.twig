@@ -1,27 +1,69 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Artiste index{% endblock %}
+{% block title %}Les artistes{% endblock %}
 
 {% block body %}
-    <h1>Les Artistes</h1>
-    <div class="row g-4">
-        {% for artiste in artistes %}
-        <div class="col-md-3">
-            <div class="card" style="width: 18rem;">
-                <div class="card-body">
-                    <div class="rounded-circle bg-secondary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">{{  artiste.pseudonyme |slice(0, 1) }}</div>
-                    <h5 class="card-title">{{ artiste.pseudonyme }}</h5>
-                    <p class="card-subtitle text-muted">{{ artiste.nomReel }}</p>
-                    <p class="card-text">{{ artiste.bio }}</p>
-                    <a href="{{ path('app_artiste_show', {'id': artiste.id}) }}" class="btn btn-primary">Voir</a>
-                </div>
-            </div>
-        </div>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
 
-        {% endfor %}
+    {# Bandeau, même style que la page des oeuvres #}
+    <section class="accueil-hero artiste-hero">
+        <div class="container">
+            <span class="accueil-badge"><i class="bi bi-person-fill"></i> Artistes</span>
+            <h1 class="accueil-titre">Les mains <span>derrière les murs</span></h1>
+            <p class="accueil-sous-titre">
+                Découvre les artistes qui colorent la ville et les oeuvres qu'ils ont laissées dans la rue.
+            </p>
+            {% if is_granted('ROLE_BENEVOLE') %}
+                <a href="{{ path('app_artiste_new') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-lg"></i> Ajouter un artiste
+                </a>
+            {% endif %}
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="accueil-section">
+            <div class="row g-3">
+                {% for artiste in artistes %}
+                    <div class="col-sm-6 col-lg-4">
+                        <a href="{{ path('app_artiste_show', {id: artiste.id}) }}" class="artiste-carte">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="artiste-avatar">{{ artiste.pseudonyme|slice(0, 1)|upper }}</div>
+                                <div>
+                                    <h3>{{ artiste.pseudonyme }}</h3>
+                                    {% if artiste.nomReel %}
+                                        <small class="text-secondary">{{ artiste.nomReel }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <span class="artiste-nationalite"><i class="bi bi-flag"></i> {{ artiste.nationalite }}</span>
+
+                            {% if artiste.bio %}
+                                {# on coupe la bio à 120 caractères pour que les cartes restent de la même taille #}
+                                <p class="artiste-bio">{{ artiste.bio|length > 120 ? artiste.bio|slice(0, 120) ~ '…' : artiste.bio }}</p>
+                            {% endif %}
+
+                            {# aperçu des 3 premières oeuvres de l'artiste #}
+                            {% if artiste.oeuvres is not empty %}
+                                <div class="artiste-apercu">
+                                    {% for oeuvre in artiste.oeuvres|slice(0, 3) %}
+                                        {% set photo = oeuvre.photos|first %}
+                                        {% if photo %}
+                                            <img src="{{ asset('uploads/photos/' ~ photo.nomFichier) }}" alt="{{ oeuvre.titre }}">
+                                        {% else %}
+                                            <div class="artiste-apercu-vide"><i class="bi bi-image"></i></div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            <span class="artiste-lien">Voir le profil <i class="bi bi-arrow-right"></i></span>
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-secondary">Aucun artiste pour l'instant</p>
+                {% endfor %}
+            </div>
+        </section>
     </div>
 {% endblock %}

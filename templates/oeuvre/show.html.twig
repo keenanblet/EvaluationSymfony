@@ -1,44 +1,145 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Oeuvre{% endblock %}
+{% block title %}{{ oeuvre.titre }}{% endblock %}
 
 {% block body %}
-    <h1>Oeuvre</h1>
+{% set photo = oeuvre.photos|first %}
+<div class="container py-4 oeuvre-show">
+    <a href="{{ path('app_oeuvre_index') }}" class="text-decoration-none small">
+        <i class="bi bi-arrow-left"></i> Retour aux oeuvres
+    </a>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ oeuvre.id }}</td>
-            </tr>
-            <tr>
-                <th>Titre</th>
-                <td>{{ oeuvre.titre }}</td>
-            </tr>
-            <tr>
-                <th>DateCreation</th>
-                <td>{{ oeuvre.dateCreation ? oeuvre.dateCreation|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ oeuvre.description }}</td>
-            </tr>
-            <tr>
-                <th>DateDestruction</th>
-                <td>{{ oeuvre.dateDestruction ? oeuvre.dateDestruction|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>OeuvreRecouverte</th>
-                <td>{{ oeuvre.oeuvreRecouverte ? 'Yes' : 'No' }}</td>
-            </tr>
-        </tbody>
-    </table>
+    {# En-tête : grande photo avec le titre par-dessus #}
+    <div class="oeuvre-hero my-4">
+        {% if photo %}
+            <img src="{{ asset('uploads/photos/' ~ photo.nomFichier) }}" alt="{{ oeuvre.titre }}">
+        {% else %}
+            <div class="oeuvre-hero-vide"><i class="bi bi-image"></i></div>
+        {% endif %}
+        <div class="oeuvre-hero-texte">
+            <div class="d-flex flex-wrap gap-2 mb-2">
+                {% if oeuvre.dateDestruction %}
+                    <span class="badge rounded-pill text-bg-danger"><i class="bi bi-x-octagon"></i> Détruite</span>
+                {% elseif oeuvre.recouverte %}
+                    <span class="badge rounded-pill text-bg-warning"><i class="bi bi-layers"></i> Recouverte</span>
+                {% else %}
+                    <span class="badge rounded-pill text-bg-success"><i class="bi bi-eye"></i> Visible</span>
+                {% endif %}
+                {% for technique in oeuvre.techniques %}
+                    <span class="badge rounded-pill text-bg-dark">{{ technique.nom }}</span>
+                {% endfor %}
+            </div>
+            <h1 class="fw-bold mb-1">{{ oeuvre.titre }}</h1>
+            {% if oeuvre.artistes is not empty %}
+                <p class="mb-0">
+                    par
+                    {% for artiste in oeuvre.artistes %}
+                        <a href="{{ path('app_artiste_show', {'id': artiste.id}) }}" class="fw-semibold">{{ artiste.pseudonyme }}</a>{{ not loop.last ? ', ' }}
+                    {% endfor %}
+                </p>
+            {% endif %}
+        </div>
+    </div>
 
-    <a href="{{ path('app_oeuvre_index') }}">back to list</a>
-        
-    {% if is_granted('ROLE_BENEVOLE') %}
-    <a href="{{ path('app_oeuvre_edit', {'id': oeuvre.id}) }}">edit</a>
+    <div class="row g-4">
+        {# Description #}
+        <div class="col-lg-8">
+            {% if oeuvre.description %}
+                <p class="lead border-start border-primary border-3 ps-3">{{ oeuvre.description }}</p>
+            {% else %}
+                <p class="text-muted">Pas de description pour cette oeuvre.</p>
+            {% endif %}
+        </div>
 
-    {{ include('oeuvre/_delete_form.html.twig') }}
+        {# Fiche technique #}
+        <div class="col-lg-4">
+            <div class="oeuvre-infos">
+                <div class="oeuvre-info">
+                    <i class="bi bi-calendar-event"></i>
+                    <div>
+                        <small>Création</small>
+                        {{ oeuvre.dateCreation ? oeuvre.dateCreation|date('d/m/Y') : 'Inconnue' }}
+                    </div>
+                </div>
+                {% if oeuvre.dateDestruction %}
+                    <div class="oeuvre-info">
+                        <i class="bi bi-calendar-x"></i>
+                        <div>
+                            <small>Destruction</small>
+                            {{ oeuvre.dateDestruction|date('d/m/Y') }}
+                        </div>
+                    </div>
+                {% endif %}
+                {% if oeuvre.lieu %}
+                    <div class="oeuvre-info">
+                        <i class="bi bi-geo-alt"></i>
+                        <div>
+                            <small>Lieu</small>
+                            {{ oeuvre.lieu.nom }}
+                            {% if oeuvre.lieu.adresse %}<br><span class="text-muted small">{{ oeuvre.lieu.adresse }}</span>{% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% if oeuvre.recouvre %}
+                    <div class="oeuvre-info">
+                        <i class="bi bi-layers"></i>
+                        <div>
+                            <small>Recouvre</small>
+                            <a href="{{ path('app_oeuvre_show', {'id': oeuvre.recouvre.id}) }}">{{ oeuvre.recouvre.titre }}</a>
+                        </div>
+                    </div>
+                {% endif %}
+                {% for dessus in oeuvre.recouvertePar %}
+                    <div class="oeuvre-info">
+                        <i class="bi bi-layers-fill"></i>
+                        <div>
+                            <small>Recouverte par</small>
+                            <a href="{{ path('app_oeuvre_show', {'id': dessus.id}) }}">{{ dessus.titre }}</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {# Autres photos #}
+    {% if oeuvre.photos|length > 1 %}
+        <h2 class="h4 mt-5 mb-3">Photos <span class="text-muted">({{ oeuvre.photos|length }})</span></h2>
+        <div class="oeuvre-photos">
+            {% for p in oeuvre.photos %}
+                <a href="{{ asset('uploads/photos/' ~ p.nomFichier) }}" target="_blank">
+                    <img src="{{ asset('uploads/photos/' ~ p.nomFichier) }}" alt="{{ oeuvre.titre }}">
+                </a>
+            {% endfor %}
+        </div>
     {% endif %}
+
+    {# Carte #}
+    <h2 class="h4 mt-5 mb-3">Où la trouver ?</h2>
+    {% if oeuvre.lieu %}
+        <div id="map" class="oeuvre-map"></div>
+        <script>
+        {
+            const position = [{{ oeuvre.lieu.latitude|json_encode }}, {{ oeuvre.lieu.longitude|json_encode }}];
+            const map = L.map("map").setView(position, 15);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                maxZoom: 19,
+                attribution: "© OpenStreetMap contributors",
+            }).addTo(map);
+            L.marker(position).addTo(map).bindPopup({{ oeuvre.titre|json_encode|raw }});
+        }
+        </script>
+    {% else %}
+        <p class="text-muted">Aucune position enregistrée pour cette œuvre.</p>
+    {% endif %}
+
+    {% if is_granted('ROLE_BENEVOLE') %}
+        <div class="d-flex gap-2 mt-5">
+            <a href="{{ path('app_oeuvre_edit', {'id': oeuvre.id}) }}" class="btn btn-outline-primary">
+                <i class="bi bi-pencil"></i> Modifier
+            </a>
+            {{ include('oeuvre/_delete_form.html.twig') }}
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

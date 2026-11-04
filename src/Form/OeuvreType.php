@@ -12,13 +12,20 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Range;
 
 class OeuvreType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // En modification, on pré-remplit les champs de la carte avec le lieu actuel
+        $oeuvre = $builder->getData();
+        $lieu = $oeuvre?->getLieu();
+
         $builder
             ->add('titre', null, [
                 'label' => 'Titre',
@@ -37,9 +44,16 @@ class OeuvreType extends AbstractType
                 'widget' => 'single_text',
                 'required' => false,
             ])
-            ->add('oeuvreRecouverte', null, [
-                'label' => 'Œuvre recouverte',
-                'label_attr' => ['class' => 'checkbox-switch'],
+            ->add('recouvre', EntityType::class, [
+                'class' => Oeuvre::class,
+                'choice_label' => 'titre',
+                'required' => false,
+                'placeholder' => 'Aucune',
+                'label' => 'Recouvre l’œuvre',
+                // On ne propose pas l'œuvre elle-même
+                'query_builder' => fn (EntityRepository $er) => $oeuvre?->getId()
+                    ? $er->createQueryBuilder('o')->where('o.id != :id')->setParameter('id', $oeuvre->getId())->orderBy('o.titre')
+                    : $er->createQueryBuilder('o')->orderBy('o.titre'),
             ])
             ->add('artistes', EntityType::class, [
                 'class' => Artiste::class,
@@ -52,16 +66,30 @@ class OeuvreType extends AbstractType
             ->add('lieuNom', HiddenType::class, [
                 'mapped' => false,
                 'required' => false,
+                'data' => $lieu?->getNom(),
+                // Champ caché : l'erreur doit remonter sur le formulaire pour être affichée
+                'error_bubbling' => true,
+                'constraints' => [
+                    new NotBlank(message: 'Recherchez le lieu de l’œuvre avec la barre de recherche de la carte.'),
+                ],
             ])
             ->add('lieuAdresse', HiddenType::class, [
                 'mapped' => false,
                 'required' => false,
+                'data' => $lieu?->getAdresse(),
             ])
+            // Coordonnées du lieu (stockées dans Lieu, plus dans Oeuvre)
             ->add('latitude', HiddenType::class, [
-                'required' => true,
+                'mapped' => false,
+                'data' => $lieu?->getLatitude(),
+                'error_bubbling' => true,
+                'constraints' => [new Range(min: -90, max: 90)],
             ])
             ->add('longitude', HiddenType::class, [
-                'required' => true,
+                'mapped' => false,
+                'data' => $lieu?->getLongitude(),
+                'error_bubbling' => true,
+                'constraints' => [new Range(min: -180, max: 180)],
             ])
             ->add('techniques', EntityType::class, [
                 'class' => Technique::class,
