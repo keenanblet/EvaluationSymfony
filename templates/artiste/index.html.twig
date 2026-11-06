@@ -12,7 +12,7 @@
             <p class="accueil-sous-titre">
                 Découvre les artistes qui colorent la ville et les oeuvres qu'ils ont laissées dans la rue.
             </p>
-            {% if is_granted('ROLE_BENEVOLE') %}
+            {% if is_granted('ROLE_ADMIN') %}
                 <a href="{{ path('app_artiste_new') }}" class="btn btn-primary btn-lg">
                     <i class="bi bi-plus-lg"></i> Ajouter un artiste
                 </a>

@@ -82,23 +82,23 @@ class AppFixtures extends Fixture
             $artistes[] = $artiste;
         }
 
-        // Oeuvres : [titre, description, date création, date destruction, oeuvre recouverte (index), lieu, artistes, techniques]
+        // Oeuvres : [titre, description, date création, date destruction, recouverte (oui/non), lieu, artistes, techniques]
         $oeuvres = [];
         foreach ([
-            ['Regard de Belleville', 'Grand portrait féminin aux tons bleus et orangés.', '2021-04-12', null, null, 0, [0], ['Bombe aérosol']],
-            ['Le Cri du Bitume', 'Lettrage wildstyle sur toute la longueur du mur.', '2019-07-03', '2023-02-15', null, 1, [1], ['Bombe aérosol']],
-            ['Liberté conditionnelle', 'Pochoir d\'un oiseau s\'échappant d\'une cage.', '2022-09-20', null, null, 0, [2], ['Pochoir']],
-            ['Pixel Invader', 'Petit personnage en mosaïque posé en hauteur.', '2018-05-01', null, null, 2, [3], ['Mosaïque']],
-            ['Méditerranée', 'Fresque monumentale représentant la mer et les pêcheurs.', '2020-06-15', null, null, 3, [4, 0], ['Fresque', 'Bombe aérosol']],
-            ['Visages collés', 'Série de portraits en papier collé.', '2023-03-08', '2024-01-10', null, 4, [2], ['Collage']],
-            ['Stickers en vrac', 'Mur recouvert de stickers de plusieurs artistes.', '2024-08-22', null, 1, 1, [1, 2], ['Sticker', 'Collage']],
-        ] as [$titre, $description, $creation, $destruction, $recouvreIdx, $lieuIdx, $artisteIdx, $techNoms]) {
+            ['Regard de Belleville', 'Grand portrait féminin aux tons bleus et orangés.', '2021-04-12', null, false, 0, [0], ['Bombe aérosol']],
+            ['Le Cri du Bitume', 'Lettrage wildstyle sur toute la longueur du mur.', '2019-07-03', '2023-02-15', true, 1, [1], ['Bombe aérosol']],
+            ['Liberté conditionnelle', 'Pochoir d\'un oiseau s\'échappant d\'une cage.', '2022-09-20', null, false, 0, [2], ['Pochoir']],
+            ['Pixel Invader', 'Petit personnage en mosaïque posé en hauteur.', '2018-05-01', null, false, 2, [3], ['Mosaïque']],
+            ['Méditerranée', 'Fresque monumentale représentant la mer et les pêcheurs.', '2020-06-15', null, false, 3, [4, 0], ['Fresque', 'Bombe aérosol']],
+            ['Visages collés', 'Série de portraits en papier collé.', '2023-03-08', '2024-01-10', false, 4, [2], ['Collage']],
+            ['Stickers en vrac', 'Mur recouvert de stickers de plusieurs artistes.', '2024-08-22', null, false, 1, [1, 2], ['Sticker', 'Collage']],
+        ] as [$titre, $description, $creation, $destruction, $recouverte, $lieuIdx, $artisteIdx, $techNoms]) {
             $oeuvre = (new Oeuvre())
                 ->setTitre($titre)
                 ->setDescription($description)
                 ->setDateCreation(new \DateTime($creation))
                 ->setDateDestruction($destruction ? new \DateTime($destruction) : null)
-                ->setRecouvre(null !== $recouvreIdx ? $oeuvres[$recouvreIdx] : null)
+                ->setOeuvreRecouverte($recouverte)
                 ->setLieu($lieux[$lieuIdx]);
             foreach ($artisteIdx as $i) {
                 $oeuvre->addArtiste($artistes[$i]);

@@ -19,12 +19,8 @@
                     <i class="bi bi-person"></i> Artistes
                 </a>
             </li>
+            {# Bénévole : peut ajouter une oeuvre (et ses photos), le reste de la gestion est réservé à l'admin #}
             {% if is_granted('ROLE_BENEVOLE') %}
-                <li class="nav-item">
-                    <a class="nav-link {{ route starts with 'app_technique' ? 'active' }}" href="{{ path('app_technique_index') }}">
-                        <i class="bi bi-brush"></i> Techniques
-                    </a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link {{ route == 'app_oeuvre_new' ? 'active' }}" href="{{ path('app_oeuvre_new') }}">
                         <i class="bi bi-plus-lg"></i> Ajouter une oeuvre
@@ -35,6 +31,11 @@
                 <li class="nav-item">
                     <a class="nav-link {{ route == 'app_admin' ? 'active' }}" href="{{ path('app_admin') }}">
                         <i class="bi bi-speedometer2"></i> Administration
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ route starts with 'app_technique' ? 'active' }}" href="{{ path('app_technique_index') }}">
+                        <i class="bi bi-brush"></i> Techniques
                     </a>
                 </li>
                 <li class="nav-item">

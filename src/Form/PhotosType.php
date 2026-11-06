@@ -36,12 +36,8 @@ class PhotosType extends AbstractType
                             'Merci d’envoyer une image valide JPEG, PNG, WebP ou GIF.',
                     ),
                 ],
-            ])
-            ->add('oeuvre', EntityType::class, [
-                'class' => Oeuvre::class,
-                'choice_label' => 'titre',
-            ])
-            ->add('etatOeuvre');
+            ]);
+            
     }
 
     public function configureOptions(OptionsResolver $resolver): void

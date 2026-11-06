@@ -110,7 +110,7 @@
             });
         </script>
         <div class="col-md-6 d-flex align-items-center">
-            {{ form_row(form.recouvre) }}
+            {{ form_row(form.oeuvreRecouverte) }}
         </div>
 
         <div class="col-md-6">
@@ -127,7 +127,7 @@
 
     {{ form_rest(form) }}
 
-    <div class="d-flex justify-content-between align-items-center mt-4">
+    <div class="d-flex justify-content-between align-items-center mt-4 oeuvre-form-actions">
         <a href="{{ path('app_oeuvre_index') }}" class="btn btn-outline-secondary">Retour à la liste</a>
         <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
     </div>

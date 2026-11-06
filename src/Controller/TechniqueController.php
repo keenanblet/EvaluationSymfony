@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_BENEVOLE')]
+#[IsGranted('ROLE_ADMIN')]
 #[Route('/technique')]
 final class TechniqueController extends AbstractController
 {

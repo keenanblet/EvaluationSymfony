@@ -35,6 +35,7 @@
                                 <a href="{{ path('app_technique_edit', {id: technique.id}) }}" class="btn btn-primary btn-sm">
                                     <i class="bi bi-pencil"></i> Modifier
                                 </a>
+                                {{ include('technique/_delete_form.html.twig') }}
                             </div>
                         </div>
                     </div>

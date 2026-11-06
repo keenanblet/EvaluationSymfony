@@ -18,13 +18,6 @@ class ArtisteType extends AbstractType
             ->add('nomReel')
             ->add('bio')
             ->add('nationalite')
-            ->add('oeuvres', EntityType::class, [
-                'class' => Oeuvre::class,
-                'choice_label' => 'titre',
-                'multiple' => true,
-                'required'=> false,
-                'expanded' => true,
-            ])
         ;
     }
 

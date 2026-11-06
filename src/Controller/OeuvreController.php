@@ -68,15 +68,34 @@ final class OeuvreController extends AbstractController
             'oeuvre' => $oeuvre,
         ]);
     }
-    #[IsGranted('ROLE_BENEVOLE')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}/edit', name: 'app_oeuvre_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function edit(Request $request, Oeuvre $oeuvre, EntityManagerInterface $entityManager, LieuRepository $lieuRepository): Response
+    public function edit(Request $request, Oeuvre $oeuvre, EntityManagerInterface $entityManager, LieuRepository $lieuRepository, FileUploader $fileUploader): Response
     {
         $form = $this->createForm(OeuvreType::class, $oeuvre);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->rattacherLieuRecherche($form, $oeuvre, $lieuRepository, $entityManager);
+
+            // Nouvelle photo choisie : elle remplace la photo actuelle (la plus récente)
+            $fichier = $form->get('photo')->getData();
+            if ($fichier) {
+                $photo = $oeuvre->getPhotos()->last();
+                if ($photo) {
+                    $fileUploader->remove($photo->getNomFichier());
+                } else {
+                    $photo = (new Photos())->setEtatOeuvre('Intacte');
+                    $oeuvre->addPhoto($photo);
+                    $entityManager->persist($photo);
+                }
+
+                $photo
+                    ->setNomFichier($fileUploader->upload($fichier))
+                    ->setDatePriseVue(new \DateTime())
+                    ->setUser($this->getUser());
+            }
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_oeuvre_index', [], Response::HTTP_SEE_OTHER);
@@ -87,7 +106,7 @@ final class OeuvreController extends AbstractController
             'form' => $form,
         ]);
     }
-    #[IsGranted('ROLE_BENEVOLE')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_oeuvre_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, Oeuvre $oeuvre, EntityManagerInterface $entityManager): Response
     {

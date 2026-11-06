@@ -57,26 +57,18 @@ class Oeuvre
      * @var Collection<int, Photos>
      */
     #[ORM\OneToMany(targetEntity: Photos::class, mappedBy: 'oeuvre', cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['datePriseVue' => 'ASC'])]
     private Collection $photos;
 
-    // Relation réflexive : l'œuvre (plus ancienne) que celle-ci recouvre
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'recouvertePar')]
-    #[ORM\JoinColumn(onDelete: 'SET NULL')]
-    #[Assert\Expression('value !== this', message: 'Une œuvre ne peut pas se recouvrir elle-même.')]
-    private ?Oeuvre $recouvre = null;
-
-    /**
-     * @var Collection<int, Oeuvre>
-     */
-    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'recouvre')]
-    private Collection $recouvertePar;
+    // L'œuvre a été recouverte par une autre (simple oui / non)
+    #[ORM\Column(options: ['default' => false])]
+    private bool $oeuvreRecouverte = false;
 
     public function __construct()
     {
         $this->artistes = new ArrayCollection();
         $this->techniques = new ArrayCollection();
         $this->photos = new ArrayCollection();
-        $this->recouvertePar = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -230,50 +222,21 @@ class Oeuvre
         return null !== $this->dateDestruction;
     }
 
-    public function getRecouvre(): ?Oeuvre
+    public function isOeuvreRecouverte(): bool
     {
-        return $this->recouvre;
+        return $this->oeuvreRecouverte;
     }
 
-    public function setRecouvre(?Oeuvre $recouvre): static
+    public function setOeuvreRecouverte(bool $oeuvreRecouverte): static
     {
-        $this->recouvre = $recouvre;
+        $this->oeuvreRecouverte = $oeuvreRecouverte;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Oeuvre>
-     */
-    public function getRecouvertePar(): Collection
-    {
-        return $this->recouvertePar;
-    }
-
+    // Raccourci utilisé dans les templates : oeuvre.recouverte
     public function isRecouverte(): bool
     {
-        return !$this->recouvertePar->isEmpty();
-    }
-
-    public function addRecouvertePar(Oeuvre $oeuvre): static
-    {
-        if (!$this->recouvertePar->contains($oeuvre)) {
-            $this->recouvertePar->add($oeuvre);
-            $oeuvre->setRecouvre($this);
-        }
-
-        return $this;
-    }
-
-    public function removeRecouvertePar(Oeuvre $oeuvre): static
-    {
-        if ($this->recouvertePar->removeElement($oeuvre)) {
-            // set the owning side to null (unless already changed)
-            if ($oeuvre->getRecouvre() === $this) {
-                $oeuvre->setRecouvre(null);
-            }
-        }
-
-        return $this;
+        return $this->oeuvreRecouverte;
     }
 }

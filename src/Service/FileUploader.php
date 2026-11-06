@@ -24,4 +24,17 @@ class FileUploader
 
         return $fileName;
     }
+
+    // Supprime l'ancien fichier du disque (s'il existe encore)
+    public function remove(?string $fileName): void
+    {
+        if (!$fileName) {
+            return;
+        }
+
+        $path = $this->targetDirectory.'/'.basename($fileName);
+        if (is_file($path)) {
+            unlink($path);
+        }
+    }
 }

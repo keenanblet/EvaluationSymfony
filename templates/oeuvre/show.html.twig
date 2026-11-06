@@ -3,7 +3,7 @@
 {% block title %}{{ oeuvre.titre }}{% endblock %}
 
 {% block body %}
-{% set photo = oeuvre.photos|first %}
+{% set photo = oeuvre.photos|last %}
 <div class="container py-4 oeuvre-show">
     <a href="{{ path('app_oeuvre_index') }}" class="text-decoration-none small">
         <i class="bi bi-arrow-left"></i> Retour aux oeuvres
@@ -80,24 +80,6 @@
                         </div>
                     </div>
                 {% endif %}
-                {% if oeuvre.recouvre %}
-                    <div class="oeuvre-info">
-                        <i class="bi bi-layers"></i>
-                        <div>
-                            <small>Recouvre</small>
-                            <a href="{{ path('app_oeuvre_show', {'id': oeuvre.recouvre.id}) }}">{{ oeuvre.recouvre.titre }}</a>
-                        </div>
-                    </div>
-                {% endif %}
-                {% for dessus in oeuvre.recouvertePar %}
-                    <div class="oeuvre-info">
-                        <i class="bi bi-layers-fill"></i>
-                        <div>
-                            <small>Recouverte par</small>
-                            <a href="{{ path('app_oeuvre_show', {'id': dessus.id}) }}">{{ dessus.titre }}</a>
-                        </div>
-                    </div>
-                {% endfor %}
             </div>
         </div>
     </div>
@@ -133,7 +115,7 @@
         <p class="text-muted">Aucune position enregistrée pour cette œuvre.</p>
     {% endif %}
 
-    {% if is_granted('ROLE_BENEVOLE') %}
+    {% if is_granted('ROLE_ADMIN') %}
         <div class="d-flex gap-2 mt-5">
             <a href="{{ path('app_oeuvre_edit', {'id': oeuvre.id}) }}" class="btn btn-outline-primary">
                 <i class="bi bi-pencil"></i> Modifier

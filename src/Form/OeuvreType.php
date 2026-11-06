@@ -8,14 +8,13 @@ use App\Entity\Oeuvre;
 use App\Entity\Technique;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Range;
 
 class OeuvreType extends AbstractType
@@ -44,16 +43,9 @@ class OeuvreType extends AbstractType
                 'widget' => 'single_text',
                 'required' => false,
             ])
-            ->add('recouvre', EntityType::class, [
-                'class' => Oeuvre::class,
-                'choice_label' => 'titre',
+            ->add('oeuvreRecouverte', CheckboxType::class, [
+                'label' => 'Œuvre recouverte',
                 'required' => false,
-                'placeholder' => 'Aucune',
-                'label' => 'Recouvre l’œuvre',
-                // On ne propose pas l'œuvre elle-même
-                'query_builder' => fn (EntityRepository $er) => $oeuvre?->getId()
-                    ? $er->createQueryBuilder('o')->where('o.id != :id')->setParameter('id', $oeuvre->getId())->orderBy('o.titre')
-                    : $er->createQueryBuilder('o')->orderBy('o.titre'),
             ])
             ->add('artistes', EntityType::class, [
                 'class' => Artiste::class,
@@ -67,11 +59,6 @@ class OeuvreType extends AbstractType
                 'mapped' => false,
                 'required' => false,
                 'data' => $lieu?->getNom(),
-                // Champ caché : l'erreur doit remonter sur le formulaire pour être affichée
-                'error_bubbling' => true,
-                'constraints' => [
-                    new NotBlank(message: 'Recherchez le lieu de l’œuvre avec la barre de recherche de la carte.'),
-                ],
             ])
             ->add('lieuAdresse', HiddenType::class, [
                 'mapped' => false,
@@ -102,10 +89,10 @@ class OeuvreType extends AbstractType
                 'label' => 'Photo de l’œuvre',
                 'mapped' => false,
                 'required' => false,
-                'help' => 'JPEG, PNG, WebP ou GIF — 5 Mo maximum.',
+                'help' => 'JPEG, PNG, WebP ou GIF — 2 Mo maximum.',
                 'constraints' => [
                     new File(
-                        maxSize: '5M',
+                        maxSize: '2M', // limite du serveur PHP (upload_max_filesize = 2M)
                         mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
                         mimeTypesMessage: 'Merci d’envoyer une image valide JPEG, PNG, WebP ou GIF.',
                     ),
