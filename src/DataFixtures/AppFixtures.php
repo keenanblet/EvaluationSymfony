@@ -22,16 +22,24 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         // Utilisateurs (mot de passe : "password")
+        // Comptes de démo pour tester chaque niveau d'accès :
+        //   user@artderue.fr     -> ROLE_USER (consultation)
+        //   benevole@artderue.fr -> ROLE_BENEVOLE (ajout d'oeuvres)
+        //   admin@artderue.fr    -> ROLE_ADMIN (tout le back-office)
         $users = [];
         foreach ([
-            ['Martin', 'Claire', 'claire.martin@artderue.fr'],
-            ['Durand', 'Hugo', 'hugo.durand@artderue.fr'],
-            ['Petit', 'Lina', 'lina.petit@artderue.fr'],
-        ] as [$nom, $prenom, $email]) {
+            ['Martin', 'Claire', 'claire.martin@artderue.fr', []],
+            ['Durand', 'Hugo', 'hugo.durand@artderue.fr', []],
+            ['Petit', 'Lina', 'lina.petit@artderue.fr', []],
+            ['Utilisateur', 'Demo', 'user@artderue.fr', []],
+            ['Benevole', 'Demo', 'benevole@artderue.fr', ['ROLE_BENEVOLE']],
+            ['Admin', 'Demo', 'admin@artderue.fr', ['ROLE_ADMIN']],
+        ] as [$nom, $prenom, $email, $roles]) {
             $user = (new User())
                 ->setNom($nom)
                 ->setPrenom($prenom)
-                ->setEmail($email);
+                ->setEmail($email)
+                ->setRoles($roles);
             $user->setPassword($this->passwordHasher->hashPassword($user, 'password'));
             $manager->persist($user);
             $users[] = $user;
@@ -53,6 +61,7 @@ class AppFixtures extends Fixture
             ['Place du Marché', '3 place du Marché, 69001 Lyon', 'Croix-Rousse', 45.7745, 4.8320],
             ['Cours Julien', '18 cours Julien, 13006 Marseille', 'Notre-Dame-du-Mont', 43.2936, 5.3836],
             ['Passage des Arts', '7 rue Sainte-Catherine, 33000 Bordeaux', null, 44.8378, -0.5732],
+            ['Hangar à Bananes', '21 quai des Antilles, 44200 Nantes', 'Île de Nantes', 47.2007, -1.5730],
         ] as [$nom, $adresse, $quartier, $lat, $lng]) {
             $lieu = (new Lieu())
                 ->setNom($nom)
@@ -67,11 +76,8 @@ class AppFixtures extends Fixture
         // Artistes
         $artistes = [];
         foreach ([
-            ['Nova', 'Camille Roux', 'Graffeuse parisienne connue pour ses portraits aux couleurs vives.', 'Française'],
-            ['K-Tag', null, 'Spécialiste du lettrage et du wildstyle depuis les années 2000.', 'Belge'],
-            ['Miss Pochoir', 'Julie Bernard', 'Artiste au pochoir, ses œuvres engagées questionnent la société.', 'Française'],
-            ['Tesselle', 'Marco Bianchi', 'Mosaïste urbain qui pose des carreaux pixelisés dans toute l\'Europe.', 'Italienne'],
-            ['Urbano', 'Diego Alvarez', 'Muraliste réalisant des fresques monumentales.', 'Espagnole'],
+            ['Ador', null, 'Artiste nantais aux personnages burlesques et colorés.', 'Française'],
+            ['Katra', null, 'Muraliste ayant cosigné plusieurs fresques avec Ador.', null],
         ] as [$pseudo, $nomReel, $bio, $nationalite]) {
             $artiste = (new Artiste())
                 ->setPseudonyme($pseudo)
@@ -85,18 +91,12 @@ class AppFixtures extends Fixture
         // Oeuvres : [titre, description, date création, date destruction, recouverte (oui/non), lieu, artistes, techniques]
         $oeuvres = [];
         foreach ([
-            ['Regard de Belleville', 'Grand portrait féminin aux tons bleus et orangés.', '2021-04-12', null, false, 0, [0], ['Bombe aérosol']],
-            ['Le Cri du Bitume', 'Lettrage wildstyle sur toute la longueur du mur.', '2019-07-03', '2023-02-15', true, 1, [1], ['Bombe aérosol']],
-            ['Liberté conditionnelle', 'Pochoir d\'un oiseau s\'échappant d\'une cage.', '2022-09-20', null, false, 0, [2], ['Pochoir']],
-            ['Pixel Invader', 'Petit personnage en mosaïque posé en hauteur.', '2018-05-01', null, false, 2, [3], ['Mosaïque']],
-            ['Méditerranée', 'Fresque monumentale représentant la mer et les pêcheurs.', '2020-06-15', null, false, 3, [4, 0], ['Fresque', 'Bombe aérosol']],
-            ['Visages collés', 'Série de portraits en papier collé.', '2023-03-08', '2024-01-10', false, 4, [2], ['Collage']],
-            ['Stickers en vrac', 'Mur recouvert de stickers de plusieurs artistes.', '2024-08-22', null, false, 1, [1, 2], ['Sticker', 'Collage']],
+            ['Fresque du Hangar à Bananes', 'Fresque monumentale sur un pignon : un personnage déguisé en banane, l\'air inquiet, fait face à un bonimenteur qui lui tend des bananes posées sur un guéridon.', null, null, false, 5, [0, 1], ['Fresque']],
         ] as [$titre, $description, $creation, $destruction, $recouverte, $lieuIdx, $artisteIdx, $techNoms]) {
             $oeuvre = (new Oeuvre())
                 ->setTitre($titre)
                 ->setDescription($description)
-                ->setDateCreation(new \DateTime($creation))
+                ->setDateCreation($creation ? new \DateTime($creation) : null)
                 ->setDateDestruction($destruction ? new \DateTime($destruction) : null)
                 ->setOeuvreRecouverte($recouverte)
                 ->setLieu($lieux[$lieuIdx]);
@@ -112,15 +112,7 @@ class AppFixtures extends Fixture
 
         // Photos : [fichier, date, état, oeuvre, user]
         foreach ([
-            ['fixture-regard-1.jpg', '2021-05-01 14:30', 'Intacte', 0, 0],
-            ['fixture-regard-2.jpg', '2024-03-12 10:15', 'Légèrement dégradée', 0, 1],
-            ['fixture-cri-1.jpg', '2019-08-10 18:00', 'Intacte', 1, 1],
-            ['fixture-cri-2.jpg', '2023-02-20 09:45', 'Recouverte', 1, 2],
-            ['fixture-liberte-1.jpg', '2022-10-02 16:20', 'Intacte', 2, 0],
-            ['fixture-pixel-1.jpg', '2018-06-15 11:00', 'Intacte', 3, 2],
-            ['fixture-mediterranee-1.jpg', '2020-07-01 19:30', 'Intacte', 4, 1],
-            ['fixture-visages-1.jpg', '2023-04-01 13:10', 'Dégradée', 5, 0],
-            ['fixture-stickers-1.jpg', '2024-09-05 17:45', 'Intacte', 6, 2],
+            ['fixture-hangar-bananes-1.png', '2024-06-01 15:00', 'Intacte', 0, 4],
         ] as [$fichier, $date, $etat, $oeuvreIdx, $userIdx]) {
             $photo = (new Photos())
                 ->setNomFichier($fichier)

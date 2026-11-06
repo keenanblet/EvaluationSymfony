@@ -22,4 +22,5 @@
 ###> uploads ###
 /public/uploads/photos/*
 !/public/uploads/photos/.gitkeep
+!/public/uploads/photos/fixture-*
 ###< uploads ###
